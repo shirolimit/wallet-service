@@ -1,0 +1,283 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Wallet Service
+  license:
+    name: MIT
+servers:
+  - url: /
+paths:
+  /accounts:
+    get:
+      operationId: listAccounts
+      description: Returns all accounts in the system
+      responses:
+        '200':
+          description: Accounts response
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  type: string
+              example: [ "alice", "bob" ]
+
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    post:
+      operationId: createAccount
+      description: Creates new account
+      parameters:
+        - name: account
+          in: body
+          required: true
+          description: Account data
+          schema:
+            $ref: '#/components/schemas/Account'     
+          example:
+            id: 'bob'
+            balance: 1000.55
+            currency: 'USD'       
+
+      responses:
+        '201':
+          description: Account created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+              example: 
+                id: "bob"
+                balance: 100.00
+                currency: "USD"
+
+        '409':
+          description: Account with specified id already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: 409
+                message: Account with name 'bob' already exists
+
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /accounts/{accountId}:
+    get:
+      operationId: getAccount
+      description: Returns information about specified account
+      parameters:
+        - name: accountId
+          in: path
+          description: ID of account
+          required: true
+          schema:
+            type: string
+            
+      responses:
+        '200':
+          description: Account response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+
+        '404':
+          description: Account not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: 404
+                message: Account 'george' was not found
+
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /accounts/{accountId}/payments:
+    get:
+      operationId: getAccountPayments
+      description: Returns payments related to specified account
+      parameters:
+        - name: accountId
+          in: path
+          description: ID of account
+          required: true
+          schema:
+            type: string
+
+      responses:
+        '200':
+          description: Payments response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Payment'
+              example:
+                - account: bob
+                  amount: 50.0
+                  direction: incoming
+                  from_account: alice
+                - account: bob
+                  amount: 30.15
+                  direction: outgoing
+                  to_account: mallory
+
+        '404':
+          description: Account not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: 404
+                message: Account 'george' was not found
+
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    post:
+      operationId: makePayment
+      description: Makes payment from {accountId} account to other account
+      parameters:
+        - name: accountId
+          in: path
+          description: ID of source account
+          required: true
+          schema:
+            type: string
+
+        - name: payment
+          in: body
+          description: Payment data
+          required: true
+          schema:
+            $ref: '#/components/schemas/Payment'
+          example:
+            id: 'f58a6c0c-e1b3-4d67-85b7-b040738fb6b9'
+            account: 'bob'
+            amount: 1024
+            direction: outgoing
+            to_account: 'alice'
+
+      responses:
+        '201':
+          description: Payment created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+        
+        '402':
+          description: Insufficient funds on source account
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: 402
+                message: Not enough funds to make a payment
+
+        '403':
+          description: Payments between accounts in different currencies are not supported
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: 403
+                message: Payments between accounts with different currencies are not allowed
+
+        '404':
+          description: Account not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          
+        default:
+          description: General error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'      
+
+components:
+  schemas:
+    Account:
+      type: object      
+      properties:
+        id:
+          type: string
+          example: 'bob'
+        balance:
+          type: number
+          format: decimal
+          example: 1000.55
+        currency:
+          type: string
+          example: 'USD'
+      required:
+        - id
+
+    Payment:
+      type: object
+      properties:
+        id:
+          type: string
+          format: guid
+          example: 'f58a6c0c-e1b3-4d67-85b7-b040738fb6b9'
+        account:
+          type: string
+          example: 'bob'
+        amount:
+          type: number
+          format: decimal
+          example: 100.10
+        direction: 
+          type: string
+          enum: [ incoming, outgoing ]
+          example: incoming
+        from_account:
+          type: string
+          example: 'alice'
+        to_account:
+          type: string
+          example: 'bob'
+      required:
+        - id
+        - account
+        - amount
+        - direction
+
+    Error:
+      type: object
+      properties:
+        code:
+          type: number
+          example: -14
+        message:
+          type: string
+          example: 'Error message'
