@@ -63,8 +63,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
               example:
-                code: 409
-                message: Account with name 'bob' already exists
+                error: Account with name 'bob' already exists
 
         default:
           description: Unexpected error
@@ -100,8 +99,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
               example:
-                code: 404
-                message: Account 'george' was not found
+                error: Account 'george' was not found
 
         default:
           description: Unexpected error
@@ -148,8 +146,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
               example:
-                code: 404
-                message: Account 'george' was not found
+                error: Account 'george' was not found
 
         default:
           description: Unexpected error
@@ -197,8 +194,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
               example:
-                code: 402
-                message: Not enough funds to make a payment
+                error: Not enough funds to make a payment
 
         '403':
           description: Payments between accounts in different currencies are not supported
@@ -207,8 +203,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
               example:
-                code: 403
-                message: Payments between accounts with different currencies are not allowed
+                error: Payments between accounts with different currencies are not allowed
 
         '404':
           description: Account not found
@@ -275,9 +270,6 @@ components:
     Error:
       type: object
       properties:
-        code:
-          type: number
-          example: -14
-        message:
+        error:
           type: string
           example: 'Error message'

@@ -8,17 +8,17 @@ import (
 // Payment struct represents payment entiry in the system
 type Payment struct {
 	// ID is an unique identifier for the payment
-	ID uuid.UUID
+	ID uuid.UUID `json:"id"`
 
 	// Account is an ID of account who requests payment information
-	Account AccountID
+	Account AccountID `json:"account"`
 
-	Amount    decimal.Decimal
-	Direction PaymentDirection
+	Amount    decimal.Decimal  `json:"amount"`
+	Direction PaymentDirection `json:"direction"`
 
 	// ToAccount is a destination account ID for Outgoing payments
-	ToAccount *AccountID
+	ToAccount *AccountID `json:"to_account,omitempty"`
 
 	// FromAccount is a source account ID for Incoming payments
-	FromAccount *AccountID
+	FromAccount *AccountID `json:"from_account,omitempty"`
 }
