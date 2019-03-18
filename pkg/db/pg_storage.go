@@ -82,6 +82,9 @@ func (ps *pgStorage) CreateAccount(ctx context.Context, acc entities.Account) er
 func (ps *pgStorage) GetAccount(ctx context.Context, id entities.AccountID) (*entities.Account, error) {
 	pgAcc, err := ps.selectAccount(ctx, id)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, entities.ErrAccountNotFound
+		}
 		return nil, err
 	}
 
@@ -109,6 +112,9 @@ func (ps *pgStorage) ListAccounts(ctx context.Context) ([]entities.AccountID, er
 func (ps *pgStorage) PaymentsByAccount(ctx context.Context, id entities.AccountID) ([]entities.Payment, error) {
 	pgAcc, err := ps.selectAccount(ctx, id)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, entities.ErrAccountNotFound
+		}
 		return nil, err
 	}
 
@@ -122,6 +128,9 @@ func (ps *pgStorage) PaymentsByAccount(ctx context.Context, id entities.AccountI
 		pgAcc.internalID,
 	)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return []entities.Payment{}, nil
+		}
 		return nil, err
 	}
 
@@ -195,9 +204,6 @@ func (ps *pgStorage) CreatePayment(ctx context.Context, payment entities.Payment
 		return err
 	}
 
-	// explicitly close query to avoid errors
-	//r.Close()
-
 	// update balances
 	updates := []balanceUpdateHelper{
 		{internalAccountID: sourceAccount.internalID, diff: payment.Amount.Neg()},
@@ -219,9 +225,6 @@ func (ps *pgStorage) CreatePayment(ctx context.Context, payment entities.Payment
 			tx.Rollback()
 			return err
 		}
-
-		// explicitly close query to avoid errors
-		//r.Close()
 	}
 
 	return tx.Commit()
