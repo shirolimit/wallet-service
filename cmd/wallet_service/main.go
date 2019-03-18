@@ -8,9 +8,11 @@ import (
 	"os/signal"
 	"time"
 
+	"github.com/shirolimit/wallet-service/pkg/db"
 	"github.com/shirolimit/wallet-service/pkg/service"
 
 	log "github.com/go-kit/kit/log"
+	_ "github.com/lib/pq"
 	"github.com/shirolimit/wallet-service/pkg/endpoint"
 	"github.com/shirolimit/wallet-service/pkg/transport"
 )
@@ -19,6 +21,7 @@ var (
 	fs        = flag.NewFlagSet("wallet", flag.ExitOnError)
 	httpAddr  = fs.String("http-address", ":8080", "HTTP address to listen")
 	zipkinURL = fs.String("zipkin-url", "", "URL for Zipkin tracing")
+	connStr   = fs.String("connection-string", "", "Postgres connection string")
 )
 
 func main() {
@@ -28,7 +31,9 @@ func main() {
 	logger = log.With(logger, "caller", log.DefaultCaller)
 	logger = log.With(logger, "timestamp", log.DefaultTimestampUTC)
 
-	svc := service.NewWalletService()
+	storage := db.NewPgStorage(*connStr)
+
+	svc := service.NewWalletService(storage)
 	svc = service.LoggingMiddleware(logger)(svc)
 
 	endpoints := endpoint.NewEndpointSet(svc)

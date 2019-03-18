@@ -224,11 +224,35 @@ func statusCodeFromError(err error) int {
 	case entities.ErrDatabaseConnection:
 		return http.StatusInternalServerError
 
+	case entities.ErrIncomingPaymentsNotAllowed:
+		return http.StatusBadRequest
+
 	case entities.ErrWrongPaymentAmount:
 		return http.StatusBadRequest
 
-	case entities.ErrIncomingPaymentsNotAllowed:
+	case entities.ErrEmptyAccountID:
 		return http.StatusBadRequest
+
+	case entities.ErrEmptyAccountCurrency:
+		return http.StatusBadRequest
+
+	case entities.ErrNegativeBalance:
+		return http.StatusBadRequest
+
+	case entities.ErrEmptyPaymentSource:
+		return http.StatusBadRequest
+
+	case entities.ErrEmptyPaymentDestination:
+		return http.StatusBadRequest
+
+	case entities.ErrEmptyPaymentID:
+		return http.StatusBadRequest
+
+	case entities.ErrPaymentSourceNotFound:
+		return http.StatusNotFound
+
+	case entities.ErrPaymentDestinationNotFound:
+		return http.StatusNotFound
 
 	default:
 		return http.StatusInternalServerError
