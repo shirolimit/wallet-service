@@ -6,7 +6,7 @@ Is a simple service created as a test task for golang developer position.
 
 It allows to create user accounts and carry out payments transfering money between accounts.
 
-### Requirements
+### Task Requirements
 Use `go-kit` to build a service.
 
 Use specified entities:
