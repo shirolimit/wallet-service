@@ -29,7 +29,7 @@ func (ws *walletService) CreateAccount(ctx context.Context, acc entities.Account
 }
 
 func (ws *walletService) ListAccounts(ctx context.Context) ([]entities.AccountID, error) {
-	return nil, nil
+	return nil, entities.ErrDatabaseConnection
 }
 
 func (ws *walletService) GetAccount(ctx context.Context, id entities.AccountID) (entities.Account, error) {
@@ -37,9 +37,9 @@ func (ws *walletService) GetAccount(ctx context.Context, id entities.AccountID) 
 }
 
 func (ws *walletService) GetPayments(ctx context.Context, id entities.AccountID) ([]entities.Payment, error) {
-	return nil, nil
+	return []entities.Payment{}, nil
 }
 
 func (ws *walletService) MakePayment(ctx context.Context, payment entities.Payment) error {
-	return nil
+	return entities.ErrDatabaseConnection
 }

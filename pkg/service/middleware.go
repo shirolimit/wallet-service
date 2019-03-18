@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/go-kit/kit/log"
@@ -47,7 +48,7 @@ func (lmw loggingMiddleware) ListAccounts(ctx context.Context) (accs []entities.
 	defer func(start time.Time) {
 		lmw.logger.Log(
 			"method", "ListAccounts",
-			"accounts", accs,
+			"accounts", fmt.Sprintf("%v", accs),
 			"error", err,
 			"duration", time.Since(start),
 		)
@@ -79,7 +80,7 @@ func (lmw loggingMiddleware) GetPayments(ctx context.Context, id entities.Accoun
 		lmw.logger.Log(
 			"method", "GetPayments",
 			"id", id,
-			"payments", payments,
+			"payments", fmt.Sprintf("%v", payments),
 			"error", err,
 			"duration", time.Since(start),
 		)

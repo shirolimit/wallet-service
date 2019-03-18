@@ -1,7 +1,7 @@
 package entities
 
 import (
-	"fmt"
+	"encoding/json"
 
 	"github.com/shopspring/decimal"
 )
@@ -18,9 +18,8 @@ type Account struct {
 
 // String implements Stringer interface for logging
 func (a Account) String() string {
-	return fmt.Sprintf("{id: %s, currency: %s, balance: %s}",
-		a.ID,
-		a.Currency,
-		a.Balance,
-	)
+	if data, err := json.Marshal(a); err == nil {
+		return string(data)
+	}
+	return "account"
 }

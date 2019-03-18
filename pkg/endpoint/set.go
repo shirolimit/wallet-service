@@ -18,6 +18,10 @@ type Set struct {
 func NewEndpointSet(ws service.WalletService) Set {
 	set := Set{
 		CreateAccountEndpoint: MakeCreateAccountEndpoint(ws),
+		ListAccountsEndpoint:  MakeListAccountsEndpoint(ws),
+		GetAccountEndpoint:    MakeGetAccountEndpoint(ws),
+		GetPaymentsEndpoint:   MakeGetPaymentsEndpoint(ws),
+		MakePaymentEndpoint:   MakeMakePaymentsEndpoint(ws),
 	}
 	return set
 }

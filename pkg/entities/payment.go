@@ -1,6 +1,8 @@
 package entities
 
 import (
+	"encoding/json"
+
 	"github.com/google/uuid"
 	"github.com/shopspring/decimal"
 )
@@ -21,4 +23,12 @@ type Payment struct {
 
 	// FromAccount is a source account ID for Incoming payments
 	FromAccount *AccountID `json:"from_account,omitempty"`
+}
+
+// String implements Stringer interface for logging
+func (p Payment) String() string {
+	if data, err := json.Marshal(p); err == nil {
+		return string(data)
+	}
+	return "payment"
 }
