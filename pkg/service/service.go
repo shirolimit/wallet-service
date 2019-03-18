@@ -86,6 +86,10 @@ func (ws *walletService) MakePayment(ctx context.Context, payment entities.Payme
 		return entities.ErrEmptyPaymentDestination
 	}
 
+	if *payment.ToAccount == payment.Account {
+		return entities.ErrPaymentSameAccount
+	}
+
 	if payment.Amount.IsNegative() || payment.Amount.IsZero() {
 		return entities.ErrWrongPaymentAmount
 	}

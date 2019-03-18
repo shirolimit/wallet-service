@@ -170,18 +170,14 @@ func makeMakePaymentHandler(m *mux.Router, endpoints endpoint.Set, options []htt
 }
 
 func decodeMakePaymentRequest(ctx context.Context, r *http.Request) (interface{}, error) {
-	pathAccountID := entities.AccountID(mux.Vars(r)["id"])
 	req := endpoint.MakePaymentRequest{}
 	err := json.NewDecoder(r.Body).Decode(&req.Payment)
 	if err != nil {
 		return req, errors.New("Bad request")
 	}
-	if len(req.Payment.Account) == 0 {
-		req.Payment.Account = pathAccountID
-	}
-	if req.Payment.Account != pathAccountID {
-		return req, errors.New("Payment source account mismatch")
-	}
+
+	req.Payment.Direction = entities.Outgoing
+	req.Payment.Account = entities.AccountID(mux.Vars(r)["id"])
 	return req, nil
 }
 
@@ -253,6 +249,9 @@ func statusCodeFromError(err error) int {
 
 	case entities.ErrPaymentDestinationNotFound:
 		return http.StatusNotFound
+
+	case entities.ErrPaymentSameAccount:
+		return http.StatusBadRequest
 
 	default:
 		return http.StatusInternalServerError

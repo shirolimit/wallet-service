@@ -20,4 +20,5 @@ var (
 	ErrEmptyPaymentID             = errors.New("Payment ID cannot be empty, use a unique GUID here")
 	ErrPaymentSourceNotFound      = errors.New("Payment source account does not exist")
 	ErrPaymentDestinationNotFound = errors.New("Payment destination account does not exist")
+	ErrPaymentSameAccount         = errors.New("Payment source and destination accounts cannot be identical")
 )

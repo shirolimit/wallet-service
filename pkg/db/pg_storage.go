@@ -50,8 +50,16 @@ func NewPgStorage(connectionString string) Storage {
 	}
 }
 
+// PgStorageFromHandle creates new Postgres storage with specified sql.DB instance
+// It is mostly used in tests
+func PgStorageFromHandle(db *sql.DB) Storage {
+	return &pgStorage{
+		db: db,
+	}
+}
+
 func (ps *pgStorage) CreateAccount(ctx context.Context, acc entities.Account) error {
-	_, err := ps.db.QueryContext(
+	_, err := ps.db.ExecContext(
 		ctx,
 		"insert into accounts (account_id, currency, balance) values ($1, $2, $3);",
 		acc.ID, acc.Currency, acc.Balance,
@@ -175,7 +183,7 @@ func (ps *pgStorage) CreatePayment(ctx context.Context, payment entities.Payment
 	}
 
 	// insert payment
-	r, err := tx.Query(
+	_, err = tx.Exec(
 		"insert into payments (id, source_id, destination_id, amount) values ($1, $2, $3, $4);",
 		payment.ID,
 		sourceAccount.internalID,
@@ -188,7 +196,7 @@ func (ps *pgStorage) CreatePayment(ctx context.Context, payment entities.Payment
 	}
 
 	// explicitly close query to avoid errors
-	r.Close()
+	//r.Close()
 
 	// update balances
 	updates := []balanceUpdateHelper{
@@ -202,7 +210,7 @@ func (ps *pgStorage) CreatePayment(ctx context.Context, payment entities.Payment
 	}
 
 	for _, u := range updates {
-		r, err = tx.Query(
+		_, err = tx.Exec(
 			"update accounts set balance = balance + $1 where id = $2;",
 			u.diff,
 			u.internalAccountID,
@@ -213,7 +221,7 @@ func (ps *pgStorage) CreatePayment(ctx context.Context, payment entities.Payment
 		}
 
 		// explicitly close query to avoid errors
-		r.Close()
+		//r.Close()
 	}
 
 	return tx.Commit()

@@ -171,12 +171,10 @@ paths:
           description: Payment data
           required: true
           schema:
-            $ref: '#/components/schemas/Payment'
+            $ref: '#/components/schemas/SubmitPayment'
           example:
             id: 'f58a6c0c-e1b3-4d67-85b7-b040738fb6b9'
-            account: 'bob'
             amount: 1024
-            direction: outgoing
             to_account: 'alice'
 
       responses:
@@ -236,6 +234,25 @@ components:
           example: 'USD'
       required:
         - id
+
+    SubmitPayment:
+      type: object
+      properties:
+        id:
+          type: string
+          format: guid
+          example: 'f58a6c0c-e1b3-4d67-85b7-b040738fb6b9'
+        amount:
+          type: number
+          format: decimal
+          example: 100.10
+        to_account:
+          type: string
+          example: 'bob'
+      required:
+        - id
+        - amount
+        - to_account
 
     Payment:
       type: object

@@ -18,10 +18,10 @@ import (
 )
 
 var (
-	fs        = flag.NewFlagSet("wallet", flag.ExitOnError)
-	httpAddr  = fs.String("http-address", ":8080", "HTTP address to listen")
-	zipkinURL = fs.String("zipkin-url", "", "URL for Zipkin tracing")
-	connStr   = fs.String("connection-string", "", "Postgres connection string")
+	fs       = flag.NewFlagSet("wallet", flag.ExitOnError)
+	httpAddr = fs.String("http-address", ":8080", "HTTP address to listen")
+	connStr  = fs.String("connection-string", "", "Postgres connection string")
+	// zipkinURL = fs.String("zipkin-url", "", "URL for Zipkin tracing")
 )
 
 func main() {
